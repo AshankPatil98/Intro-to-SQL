@@ -1,0 +1,113 @@
+Oracle SQL
+Lab Assignment #4
+Ashank Patil
+ID: 20248658
+Due Date: 23 July 2022
+Date Handed In : 23 July 2022
+
+——————————————————
+
+#1. Display the manager number and the salary of the lowest paid employee for that manager. Exclude anyone whose manager is not known. Exclude any groups where the minimum salary is less than $1000. Sort the output in descending order of salary.
+
+SQL> SELECT DISTINCT e.mgr AS "Manager #", e1.sal AS "Lowest Salary"
+FROM emp e INNER JOIN emp e1 ON (e.mgr = e1.mgr)
+WHERE e1.sal = (SELECT MIN(e2.sal) FROM emp e2 WHERE e2.mgr = e1.mgr)
+AND e1.sal > 1000
+AND e.mgr IS NOT NULL
+ORDER BY e.mgr;  2    3    4    5    6  
+
+ Manager # Lowest Salary
+---------- -------------
+      7566	    3000
+      7782	    1300
+      7788	    1100
+      7839	    2450
+
+#2. Write a query to display the department name, location name, number of employees, and the average salary for all employees in that department. Label the columns dname, loc, Number of People, and Salary, respectively.
+
+SQL> SELECT d.dname AS "Dept. Name",
+	d.loc AS "LOC",
+	COUNT(e.deptno) AS "# of people",
+	TRUNC(AVG(e.sal), 2) AS "Avg. Salary"
+FROM dept d INNER JOIN emp e ON (d.deptno = e.deptno)
+GROUP BY d.dname, d.loc;  2    3    4    5    6  
+
+Dept. Name     LOC	     # of people Avg. Salary
+-------------- ------------- ----------- -----------
+ACCOUNTING     NEW YORK 	       3     2916.66
+SALES	       CHICAGO		       6     1566.66
+RESEARCH       DALLAS		       5	2175
+
+
+#3. Write a query to display department names with salary grade, minimum salary and average commission. For departments with null commission, you should display 0. (salgrade table can be used for getting salary grade).
+
+
+SQL> SELECT d.dname AS "Dept. Name",
+      	sg.grade AS "Sal. Grade",
+      	e.sal AS "Lowest Salary",
+      	TRUNC(AVG(NVL(e2.comm, 0)), 2) AS "Avg. Commission"
+FROM salgrade sg
+    	INNER JOIN emp e
+        	ON (e.sal BETWEEN sg.losal AND sg.hisal)
+    	INNER JOIN dept d
+        	ON (d.deptno = e.deptno)
+    	INNER JOIN emp e2
+        	ON (d.deptno = e2.deptno)
+WHERE e.sal = (select MIN(e1.sal) from emp e1 WHERE e1.deptno = e.deptno)
+GROUP BY d.deptno, d.dname, sg.grade, e.sal;  2    3    4    5    6    7    8    9   10   11   12   13  
+
+Dept. Name     Sal. Grade Lowest Salary Avg. Commission
+-------------- ---------- ------------- ---------------
+SALES			1	    950 	 366.66
+RESEARCH		1	    800 	      0
+ACCOUNTING		2	   1300 	      0
+
+
+#4. What is difference between COUNT(*), COUNT(col_name), COUNT(DISTINCT(col_name)), COUNT(ALL(col_name))? Explain with examples.
+
+COUNT(*) can count all the rows in a table while COUNT(col_name) will count the rows where col_name is not null. This means that the count for COUNT(col_name) will always be lower than COUNT(col_name) if there are any null values.
+
+Example:
+
+SELECT COUNT (*) FROM emp;  <-- counts all the rows
+SELECT COUNT(job) FROM emp; <-- counts the rows that are not null
+
+The same sort of concept applies in the case of COUNT(DISTINCT(col_name)) and COUNT(ALL(col_name)). COUNT(DISTINCT(col_name)) will return a lower count since it will omit any duplicate values unlike COUNT(ALL(col_name)).
+
+Example:
+
+SELECT COUNT(ALL(job)) from emp;
+SELECT COUNT(DISTINCT(job)) from emp; <-- omits duplicates therefore count result will be less
+
+
+#5. Display the employee number, name, salary, and salary increase by 15% expressed as a whole number. Label the column New Salary.
+
+SQL> SELECT empno AS "Emp. Number",
+       	ename AS "Emp. Name",
+       	sal AS "Salary",
+       	TRUNC(sal+sal*0.15) AS "New Salary (15% increase)"
+FROM emp;  2    3    4    5  
+
+Emp. Number Emp. Name	   Salary New Salary (15% increase)
+----------- ---------- ---------- -------------------------
+       7839 KING	     5000		       5750
+       7698 BLAKE	     2850		       3277
+       7782 CLARK	     2450		       2817
+       7566 JONES	     2975		       3421
+       7654 MARTIN	     1250		       1437
+       7499 ALLEN	     1600		       1840
+       7844 TURNER	     1500		       1725
+       7900 JAMES	      950		       1092
+       7521 WARD	     1250		       1437
+       7902 FORD	     3000		       3450
+       7369 SMITH	      800			920
+
+Emp. Number Emp. Name	   Salary New Salary (15% increase)
+----------- ---------- ---------- -------------------------
+       7788 SCOTT	     3000		       3450
+       7876 ADAMS	     1100		       1265
+       7934 MILLER	     1300		       1495
+
+14 rows selected.
+
+

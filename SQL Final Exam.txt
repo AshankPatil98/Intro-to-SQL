@@ -1,0 +1,181 @@
+Oracle SQL
+Final Exam
+Ashank Patil
+ID: 20248658
+Due Date: 5 Aug 2022
+Date Handed In : 5 Aug 2022
+
+——————————————————
+
+
+Problem 1
+
+Given the following tables:
+UserAccounts(userID: int, name: string, email: string, age: int, city: string)
+UserEducation(userID: int, school : string, startYear: int, nishYear: int)
+UserInterests(userID: int, interest: string)
+UserPartner(userID: int, partnerUserID: int, marriedToPartner: boolean)
+ConnectedTo(userID: int, friendUserID: int, privilegeLevel : int)
+
+
+Write each of the following queries.
+
+(a) (10pts) Find the users interested in “swimming" who are studying at Penn (assume
+finishYear is the predicted year of degree completion). Write this query in SQL.
+
+SELECT * FROM UserAccounts 
+WHERE userID IN
+(SELECT userID FROM UserInterests WHERE interest = 'swimming' WHERE userID In
+(SELECT userID FROM UserEducation WHERE school = 'Penn' AND finishYear > 2022))
+
+(b) (10pts) Find the IDs of users who have shared interests. Write this query in SQL.
+
+SELECT userID
+FROM UserInterests u1
+INNER JOIN UserInterests u1 ON(u2.interest = u1.interest)
+WHERE u1.user_id = 1 
+AND u2.user_id <> 1;
+
+
+
+(c) (10pts) Find the user(s) who has(have) enrolled in the most schools. Write this
+query in SQL.
+
+SELECT userID
+FROM UserEducation
+GROUP BY userID
+HAVING COUNT(DISTINCT school) >= ALL(
+  SELECT COUNT(DISTINCT school)
+  FROM UserEducation
+  GROUP BY userID)
+
+
+Problem 2 
+
+Suppose we have implemented a notion of user mailboxes: a “private" inbox for messages (analogous to email) and a public “wall" where others can post (and where messages are visible to all friends).
+
+
+(a) (10pts) Please list all tables to be used, with columns and respective data types.
+
+CREATE TABLE User(
+UserID int,
+Name varchar,
+Password varchar,
+ProfilePicURL varchar,
+Bio varchar,
+BirthDate date,
+Note varchar
+);
+
+
+CREATE TABLE Message(
+MessageID int.
+Text varchar,
+SendDateTime datetime,
+SenderUserID int,
+ReceiverUserID int,
+ReadDate datetime,
+Length int
+);
+
+CREATE TABLE Wall(
+WallID int,
+UserID int,
+LastUpdateDateTime datetime
+);
+
+CREATE TABLE Post(
+WallID int,
+UserID int,
+UploadedDatetime datetime,
+Text varchar
+);
+
+CREATE TABLE FriendsList(
+UserID int,
+UserFriendID int,
+);
+
+CREATE TABLE PostComments(
+PostID int,
+ViewerUserID int,
+Comment varchar,
+ViewDateTime datetime
+);
+
+
+
+Problem 3
+
+Create a tablespace that will have an initial size of 10MB, never runs out of space (as in if a disk is 1 Petabyte) it will use it all without ever having to change the tablespace configuration.
+
+CREATE TABLESPACE <Final_Exam>
+  DATAFILE 'Answers.dbf'
+  SIZE 10M 
+  AUTOEXTEND ON;
+
+
+
+Problem 4
+
+a. Create an equipment table with the following information: (Create a composite key)
+
+equipmentId - primary key
+equipmentDesc 
+equipmentPrice - primary key
+
+CREATE TABLE Equipment(
+EquipmentId int,
+EquipmentDesc varchar(255),
+EquipmentPrice decimal(8,2),
+PRIMARY KEY(equipmentId,equipmentPrice)
+);
+
+
+b. Create a rental table with the following fields:
+
+Rentalid- primary key
+RentalDate - primary key
+equipmentId - foreign key
+equipmentPrice - foreign key
+Status
+
+CREATE TABLE Rental(
+RentalId int,
+RentalDate date,
+EquipmentId int,
+EquipmentPrice decimal(8,2),
+Status varchar(255),
+PRIMARY KEY(RentalId,RentalDate),
+FOREIGN KEY(EquipmentId,EquipmentPrice) REFERENCES Equipment(EquipmentId,EquipmentPrice)
+);
+
+
+
+Use appropriate data types and CONSTRAINTS, while creating tables. 
+
+
+Problem 5
+a. Insert 1 item in the equipment table and then insert a row to show that it is rented out. You can choose the values as needed.
+
+INSERT INTO Equipment VALUES(1, 'equipment name', 300);
+INSERT INTO Rental VALUES(1, '2022-08-05', 1, 280, 'Pending');
+        
+b. Now create a query, which will show the equipment rented out with status. 
+
+SELECT EquipmentDesc, R.status
+FROM Equipment E, Rental R
+WHERE E.EquipmentId = R.EquipmentId;
+
+
+Problem 6
+Which partitioning type is most efficient to use and why?
+
+Hash portioning is the most efficient type to use. This is because with range or list portioning you need to explicitly specify which partion the column values need to be stored into. With hash portioning mysql does it for you and you only need to specify the column value and number of partitions into which the table is divided.
+
+
+
+
+
+
+

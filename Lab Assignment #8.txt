@@ -1,0 +1,84 @@
+Oracle SQL
+Lab Assignment #8
+Ashank Patil
+ID: 20248658
+Due Date: 5 Aug 2022
+Date Handed In : 5 Aug 2022
+
+——————————————————
+Write DML Statements to simulate the following Business Processes:
+
+Q1: Setup a department, course within a department with 2 sections. Section must have a location assigned. Produce a report showing the department, course, and sections (with complete information).
+
+
+INSERT INTO FeeSchedule VALUES (2313, NULL, NULL, NULL, NULL);
+INSERT INTO Resident VALUES (9876, 'Sunset Suites', 3213);
+INSERT INTO Member VALUES (
+  1987654320,
+  'Biden', 'Joe',
+  '3213 White House Avenue',
+  'mrpresident@gmail.com',
+  '408 343 1778', 1, 9876
+);
+
+
+INSERT INTO Location VALUES (99999, 'Washington DC');
+INSERT INTO Location VALUES (88888, 'ONLINE CLASS');
+INSERT INTO College VALUES (1234, 'De Anza College', '21250 Stevens Creek Blvd', '4083425454');
+INSERT INTO Department VALUES (4321, 'Computer Information Systems', 99999, 1234);
+INSERT INTO Course VALUES (5678, 64, 'Intro to SQL', NULL, 4321);
+INSERT INTO Section VALUES (
+  1025, 1, 5678, 77777,
+  1800, 2000, '28-JUNE-2022', '05-AUG-2022',
+  1987654310
+);
+INSERT INTO Section VALUES (
+  1026, 2, 5678, 88888,
+  NULL, NULL, '28-JUNE-2022', '05-AUG-2022',
+  1987654320
+);
+
+
+SELECT d.name, c.name, s.*
+FROM Department d, Course c, Section s
+WHERE d.ID = c.Department_ID AND c.ID = s.Course_ID;
+
+
+Q2. Now register a student to a section and process student payment. Produce a report showing student registration information, including payment information.
+
+
+INSERT INTO FeeSchedule VALUES (8888, '28-JUNE-2015', '05-AUG-2022', 25, 200.00);
+INSERT INTO Member VALUES (
+  201973557,
+  'Patil' 'Ashank',
+  '11059 Flowering Pear Dr',
+  'ashank.patil@gmail.com',
+  '408 732 1066', 2, 9876
+);
+INSERT INTO Payment VALUES (9765, 'CIS64B', 'REGISTRATION');
+INSERT INTO StudentFee VALUES (
+  1234567890,
+  'N',
+  201973557,
+  1026,
+  9765
+);
+
+-- Report:
+SELECT m.ID, m.last_name, sf.*, p.*
+FROM Member m, StudentFee sf, Payment p
+WHERE m.ID = sf.Student_ID AND (p.ID = sf.Payment_ID);
+
+Q3. How can you improve your DB Schema further. Make four recommendations.
+
+Due to the nature of this database there will likely be multiple colleges added in many locations and there will be many queries regarding these fields. I think it would be a good idea to set indexes for these fields.
+
+I could store the timestamps and dates that are strings as datetimes instead.
+
+I could change the datatypes of the member table.
+
+I should not over normalize. Dates, zips, etx dont need their own tables with foreign key lookups.
+
+
+
+

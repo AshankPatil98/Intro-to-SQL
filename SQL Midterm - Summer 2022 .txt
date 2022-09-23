@@ -1,0 +1,186 @@
+Oracle SQL
+Midterm
+Ashank Patil
+ID: 20248658
+Due Date: 15 July 2022
+Date Handed In : 15 July 2022
+
+Introduction to SQL
+Pl. email completed midterm to cislabs05@gmail.com.
+
+
+Exam is open book and notes.
+
+
+It should take 2.0 hours for you all to take the midterm.
+
+
+Pl. email me if you have any questions at singhsukhjit@fhda.edu
+
+
+Pl. do not use sqlplus. I do not expect any output to be submitted.
+
+
+Each question carries equal # of points.
+
+
+Consider the following schema tables and answer the questions below
+CREATE TABLE DEPT ( 
+DEPTNO NUMBER(2) NOT NULL, 
+DNAME CHAR(14), 
+LOC CHAR(13), 
+CONSTRAINT DEPT_PRIMARY_KEY PRIMARY KEY (DEPTNO)); 
+
+
+INSERT INTO DEPT VALUES (10,'ACCOUNTING','NEW YORK'); 
+INSERT INTO DEPT VALUES (20,'RESEARCH','DALLAS'); 
+INSERT INTO DEPT VALUES (30,'SALES','CHICAGO'); 
+INSERT INTO DEPT VALUES (40,'OPERATIONS','BOSTON'); 
+
+
+CREATE TABLE EMP ( 
+EMPNO NUMBER(4) NOT NULL, 
+ENAME CHAR(10), 
+JOB CHAR(9), 
+MGR NUMBER(4) CONSTRAINT EMP_SELF_KEY 
+REFERENCES EMP (EMPNO), 
+HIREDATE DATE, 
+SAL NUMBER(7,2), 
+COMM NUMBER(7,2), 
+DEPTNO NUMBER(2) NOT NULL, 
+CONSTRAINT EMP_FOREIGN_KEY FOREIGN KEY (DEPTNO) REFERENCES DEPT (DEPTNO), 
+CONSTRAINT EMP_PRIM_KEY PRIMARY KEY (EMPNO)); 
+
+
+INSERT INTO EMP VALUES (7839,'KING','PRESIDENT',NULL,'17-NOV-1981',5000,NULL,10); 
+INSERT INTO EMP VALUES (7698,'BLAKE','MANAGER',7839,'1-MAY-1981',2850,NULL,30); 
+INSERT INTO EMP VALUES (7782,'CLARK','MANAGER',7839,'9-JUN-1981',2450,NULL,10); 
+INSERT INTO EMP VALUES (7566,'JONES','MANAGER',7839,'2-APR-1981',2975,NULL,20); 
+INSERT INTO EMP VALUES (7654,'MARTIN','SALESMAN',7698,'28-SEP-1981',1250,1400,30); 
+INSERT INTO EMP VALUES (7499,'ALLEN','SALESMAN',7698,'20-FEB-1981',1600,300,30); 
+INSERT INTO EMP VALUES (7844,'TURNER','SALESMAN',7698,'8-SEP-1981',1500,0,30); 
+INSERT INTO EMP VALUES (7900,'JAMES','CLERK',7698,'3-DEC-1981',950,NULL,30); 
+INSERT INTO EMP VALUES (7521,'WARD','SALESMAN',7698,'22-FEB-1981',1250,500,30); 
+INSERT INTO EMP VALUES (7902,'FORD','ANALYST',7566,'3-DEC-1981',3000,NULL,20); 
+INSERT INTO EMP VALUES (7369,'SMITH','CLERK',7902,'17-DEC-1980',800,NULL,20); 
+INSERT INTO EMP VALUES (7788,'SCOTT','ANALYST',7566,'09-DEC-1982',3000,NULL,20); 
+INSERT INTO EMP VALUES (7876,'ADAMS','CLERK',7788,'12-JAN-1983',1100,NULL,20); 
+INSERT INTO EMP VALUES (7934,'MILLER','CLERK',7782,'23-JAN-1982',1300,NULL,10); 
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE SALGRADE ( 
+GRADE NUMBER, 
+LOSAL NUMBER, 
+HISAL NUMBER); 
+
+
+INSERT INTO SALGRADE VALUES (1,700,1200); 
+INSERT INTO SALGRADE VALUES (2,1201,1400); 
+INSERT INTO SALGRADE VALUES (3,1401,2000); 
+INSERT INTO SALGRADE VALUES (4,2001,3000); 
+INSERT INTO SALGRADE VALUES (5,3001,9999); 
+
+
+________________
+
+
+Following questions are based on emp/dept tables.
+
+Question 1:
+What is referential integrity and how is it used with update and delete statements? Provide an example of each.
+
+Referential integrity is when the references between tables are valid and no invalid links exist. It makes sure that the tables are in sync during the execution of update and delete statements. 
+
+UPDATE emp
+SET empno = 11992 WHERE empno = 10602;
+
+DELETE FROM emp WHERE empno = 11992;
+
+
+
+Question 2:
+Write a query that shows the highest salary of an employee.
+
+SELECT ename AS "Emp. Name, MAX(sal) AS "Max. Salary"
+FROM emp;
+
+
+
+
+Question 3:
+Write a query to display all departments that do not have an employee.
+
+SELECT deptno
+FROM dept
+WHERE deptno NOT IN (SELECT deptno FROM emp);
+
+
+Question 4:
+Write a query to show the number of employees in each department.
+
+SELECT a.deptno, 
+COUNT b.deptno 
+FROM dept a LEFT OUTER JOIN emp b
+ON a.deptno = b.deptno GROUP BY a.DEPTNO;
+
+
+Question 5:
+Provide an example of each rule of normalization. First, Second and Third.
+
+The first rule of normalization states that an attribute in a table cannot hold multiple values. For example, in a table, if there are 2 phone numbers attributed to one employee, there will be 2 rows with the employee's name and the different phone numbers.
+
+The second rule of normalization states that all non-key attributes are fully dependent on the primary key. For example, you have employees that do multiple types of jobs and show their salaries. You will split this into 2 separate table where they both show the employee id but 1 table will show the multiple jobs they do and the other will show the salary. 
+
+The third rule of normalization is used to reduce data duplication. An example of this would be if you have a table with employee id, name, zip code, city and state, the city and state are dependent on the zip code which is dependent on the ID. This means that transitively the city and state are dependent on the ID so you would need to move city and state to a new zip code table with employee zip as the primary key.
+
+
+Question 6a:
+Write a query to print the following output
+1. First four letters of a person’s name.
+2. First Tuesday after their hiredate
+3. Annual Salary including commission.
+4. First two letters of Department Name.
+
+1.SELECT SUBSTR(ename, 1, 4) 
+FROM emp;
+
+2.SELECT NEXT_DAY((SELECT hiredate, FROM emp), 'Tuesday')
+FROM emp;
+
+3.SELECT sal(+) IF NULL(comm,0)
+FROM emp;
+
+4.SELECT SUBSTR(dname, 1, 2)
+FROM dept;
+
+Question 6b:
+Write a query to provide a list of all managers and their respective employees. Your report should show Manager’s Name, Manager’s Department name, Employee Number and Employee Name.
+
+SELECT e1.ename AS "Emp. Name", e1.empno AS "Emp. Num", e2.mgr AS "Mgr. Name", e2.empno AS "Mgr. Num."
+From emp e1 JOIN emp e2
+ON (e1.empno = e2.empno);
+
+
+Question 7:
+List employee information (ename, job and salary) with employees with lowest salary in each department.
+
+SELECT ename, job, sal, deptno
+FROM emp
+WHERE sal IN(SELECT MIN(sal)
+FROM emp
+GROUP BY deptno);
+
+
+Question 8:
+Show the number of employees in each salary grade with a salary less than 3000.
+
+SELECT ename AS "Emp. Name" 
+FROM emp WHERE sal>3000;

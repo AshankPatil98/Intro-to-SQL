@@ -1,0 +1,193 @@
+Oracle SQL
+Lab Assignment #3
+Ashank Patil
+ID: 20248658
+Due Date: 14 July 2022
+Date Handed In : 14 July 2022
+
+——————————————————
+
+1) Write a query to display employee number, employee name, hiredate, manager's name for those employees, whose manager's name starts with K or M or S. Label the columns Employee Number, Employee Name, Hiredate, Mgr Name.
+
+
+SQL> SELECT e1.empno AS "Emp.Number",
+e1.ename AS "Emp. Name",
+e1.hiredate AS "Hiredate",
+e2.ename AS "MGR Name"
+FROM emp2 e1, emp2 e2
+WHERE (e1.mgr IS NOT NULL AND e1.mgr = e2.empno)
+AND(
+trim(upper(e2.ename)) LIKE upper('K%')
+OR
+trim(upper(e2.ename)) LIKE upper('M%')
+OR
+trim(upper(e2.ename)) LIKE upper('S%')
+);  2    3    4    5    6    7    8    9   10   11   12   13  
+
+Emp.Number Emp. Name  Hiredate	MGR Name
+---------- ---------- --------- ----------
+      7698 BLAKE      01-MAY-81 KING
+      7782 CLARK      09-JUN-81 KING
+      7566 JONES      02-APR-81 KING
+      7876 ADAMS      12-JAN-83 SCOTT
+
+
+2) Create a query that will display the employee name, department number, department name and all the employees that work in the same department as a given employee. Give each column an appropriate label.
+
+SQL> SELECT e.ename "Emp. Name", c.ename "CoWorker", e.deptno "Dept. No", d.dname "Dept. Name"
+FROM emp e, emp c, dept d
+WHERE e.deptno = d.deptno
+AND e.deptno = c.deptno
+AND e.empno != c.empno;  2    3    4    5  
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+MILLER	   KING 	      10 ACCOUNTING
+CLARK	   KING 	      10 ACCOUNTING
+TURNER	   BLAKE	      30 SALES
+MARTIN	   BLAKE	      30 SALES
+ALLEN	   BLAKE	      30 SALES
+JAMES	   BLAKE	      30 SALES
+WARD	   BLAKE	      30 SALES
+MILLER	   CLARK	      10 ACCOUNTING
+KING	   CLARK	      10 ACCOUNTING
+FORD	   JONES	      20 RESEARCH
+SMITH	   JONES	      20 RESEARCH
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+SCOTT	   JONES	      20 RESEARCH
+ADAMS	   JONES	      20 RESEARCH
+TURNER	   MARTIN	      30 SALES
+BLAKE	   MARTIN	      30 SALES
+ALLEN	   MARTIN	      30 SALES
+JAMES	   MARTIN	      30 SALES
+WARD	   MARTIN	      30 SALES
+TURNER	   ALLEN	      30 SALES
+BLAKE	   ALLEN	      30 SALES
+MARTIN	   ALLEN	      30 SALES
+JAMES	   ALLEN	      30 SALES
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+WARD	   ALLEN	      30 SALES
+BLAKE	   TURNER	      30 SALES
+MARTIN	   TURNER	      30 SALES
+ALLEN	   TURNER	      30 SALES
+JAMES	   TURNER	      30 SALES
+WARD	   TURNER	      30 SALES
+TURNER	   JAMES	      30 SALES
+BLAKE	   JAMES	      30 SALES
+MARTIN	   JAMES	      30 SALES
+ALLEN	   JAMES	      30 SALES
+WARD	   JAMES	      30 SALES
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+TURNER	   WARD 	      30 SALES
+BLAKE	   WARD 	      30 SALES
+MARTIN	   WARD 	      30 SALES
+ALLEN	   WARD 	      30 SALES
+JAMES	   WARD 	      30 SALES
+JONES	   FORD 	      20 RESEARCH
+SMITH	   FORD 	      20 RESEARCH
+SCOTT	   FORD 	      20 RESEARCH
+ADAMS	   FORD 	      20 RESEARCH
+JONES	   SMITH	      20 RESEARCH
+FORD	   SMITH	      20 RESEARCH
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+SCOTT	   SMITH	      20 RESEARCH
+ADAMS	   SMITH	      20 RESEARCH
+JONES	   SCOTT	      20 RESEARCH
+FORD	   SCOTT	      20 RESEARCH
+SMITH	   SCOTT	      20 RESEARCH
+ADAMS	   SCOTT	      20 RESEARCH
+JONES	   ADAMS	      20 RESEARCH
+FORD	   ADAMS	      20 RESEARCH
+SMITH	   ADAMS	      20 RESEARCH
+SCOTT	   ADAMS	      20 RESEARCH
+CLARK	   MILLER	      10 ACCOUNTING
+
+Emp. Name  CoWorker	Dept. No Dept. Name
+---------- ---------- ---------- --------------
+KING	   MILLER	      10 ACCOUNTING
+
+56 rows selected.
+
+
+3) Write a query to display the department name and location of all employees who are clerks.
+
+SQL> SELECT e.ename AS "Emp. Name", e.job AS "Emp. Job", d.dname AS "Dept. Name", d.loc AS "Location"
+FROM emp2 e, dept d
+WHERE trim(upper(e.job)) = 'CLERK' AND e.deptno = d.deptno(+)
+ORDER BY d.loc, d.dname;  2    3    4  
+
+Emp. Name  Emp. Job  Dept. Name     Location
+---------- --------- -------------- -------------
+JAMES	   CLERK     SALES	    CHICAGO
+SMITH	   CLERK     RESEARCH	    DALLAS
+ADAMS	   CLERK
+MILLER	   CLERK
+
+
+4)  Insert a new row into the department table: department number = 50, department name = training, location = San Francisco. Now create a query to display all the employees in department number 20 and 50. Columns to be displayed are emp number, emp name, dept name, dept location.
+
+
+SQL> INSERT INTO dept VALUES (50, 'training', 'San Francisco');
+
+1 row created.
+
+SQL> SELECT e.empno "Emp. No", e.ename "Emp. Name", d.deptno "Dept. No", d.loc "Location"
+FROM emp e, dept d 
+WHERE e.deptno(+)=d.deptno and (d.deptno=20 or d.deptno=50);  2    3  
+
+   Emp. No Emp. Name	Dept. No Location
+---------- ---------- ---------- -------------
+      7566 JONES	      20 DALLAS
+      7902 FORD 	      20 DALLAS
+      7369 SMITH	      20 DALLAS
+      7788 SCOTT	      20 DALLAS
+      7876 ADAMS	      20 DALLAS
+			      50 San Francisco
+
+6 rows selected.
+
+
+5) Insert a new row into the emp table - you can choose any values for the fields, but department number should be null. Now create a query to display all the employees and all the departments, using joins.
+
+SQL> INSERT INTO emp2 VALUES (2005, 'ASHANK', 'CEO', NULL, '1-JANUARY-1998', 48658, NULL, NULL);
+
+1 row created.
+
+
+SQL> SELECT e.ename "Emp. Name", d.dname "Dept. Name"
+FROM emp2 e, dept d
+WHERE e.deptno = d.deptno(+);  2    3  
+
+Emp. Name  Dept. Name
+---------- --------------
+CLARK	   ACCOUNTING
+KING	   ACCOUNTING
+SMITH	   RESEARCH
+FORD	   RESEARCH
+JONES	   RESEARCH
+WARD	   SALES
+JAMES	   SALES
+TURNER	   SALES
+ALLEN	   SALES
+MARTIN	   SALES
+BLAKE	   SALES
+
+Emp. Name  Dept. Name
+---------- --------------
+ASHANK
+MILLER
+ADAMS
+SCOTT
+
+15 rows selected.
+
+
+
